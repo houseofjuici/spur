@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* Base styles */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-neutral-100 dark:bg-neutral-800;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-neutral-300 dark:bg-neutral-600 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary-400 dark:bg-primary-500;
+  }
+}
+
+/* Component styles */
+@layer components {
+  /* Ethereal animations */
+  .ethereal-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+  
+  .wave-animation {
+    animation: wave 2s ease-in-out infinite;
+  }
+  
+  .float-animation {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  /* Loading states */
+  .loading-pulse {
+    @apply animate-pulse;
+  }
+  
+  .loading-skeleton {
+    @apply bg-neutral-200 dark:bg-neutral-700 rounded animate-pulse;
+  }
+  
+  /* Status indicators */
+  .status-active {
+    @apply bg-green-500 text-white;
+  }
+  
+  .status-paused {
+    @apply bg-yellow-500 text-white;
+  }
+  
+  .status-error {
+    @apply bg-red-500 text-white;
+  }
+  
+  /* Interactive elements */
+  .interactive-card {
+    @apply transition-all duration-200 hover:shadow-ethereal hover:scale-[1.02] active:scale-[0.98];
+  }
+  
+  .button-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 shadow-ethereal hover:shadow-ethereal-lg;
+  }
+  
+  .button-secondary {
+    @apply bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-medium py-2 px-4 rounded-lg border border-neutral-200 dark:border-neutral-600 transition-colors duration-200;
+  }
+  
+  /* Form elements */
+  .input-field {
+    @apply w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200;
+  }
+  
+  /* Memory graph styles */
+  .memory-node {
+    @apply cursor-pointer transition-all duration-200 hover:scale-110;
+  }
+  
+  .memory-edge {
+    @apply stroke-neutral-300 dark:stroke-neutral-600;
+  }
+  
+  .memory-edge-active {
+    @apply stroke-primary-500;
+  }
+  
+  /* Assistant chat styles */
+  .chat-message-assistant {
+    @apply bg-neutral-50 dark:bg-neutral-800 rounded-2xl p-4 max-w-[80%];
+  }
+  
+  .chat-message-user {
+    @apply bg-primary-500 text-white rounded-2xl p-4 max-w-[80%] ml-auto;
+  }
+  
+  .typing-indicator {
+    @apply flex space-x-1;
+  }
+  
+  .typing-indicator span {
+    @apply w-2 h-2 bg-neutral-400 rounded-full animate-bounce;
+    animation-delay: calc(var(--i) * 0.1s);
+  }
+  
+  /* Workflow cards */
+  .workflow-card {
+    @apply bg-white dark:bg-neutral-800 rounded-xl p-6 shadow-ethereal border border-neutral-100 dark:border-neutral-700 interactive-card;
+  }
+  
+  .workflow-card-active {
+    @apply ring-2 ring-primary-500;
+  }
+  
+  /* Privacy controls */
+  .privacy-toggle {
+    @apply relative inline-flex h-6 w-11 items-center rounded-full bg-neutral-200 dark:bg-neutral-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500;
+  }
+  
+  .privacy-toggle-active {
+    @apply bg-primary-500;
+  }
+  
+  .privacy-toggle-knob {
+    @apply inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1;
+  }
+  
+  .privacy-toggle-active .privacy-toggle-knob {
+    @apply translate-x-6;
+  }
+}
+
+/* Utility styles */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

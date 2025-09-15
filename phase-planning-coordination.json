@@ -1,0 +1,164 @@
+{
+  "phase_planning": {
+    "current_status": "Foundation issues (1-30) in progress",
+    "new_issues_created": [
+      31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42
+    ],
+    "total_issues": 42
+  },
+  "phase_assignments": {
+    "phase_2_assistant_core": {
+      "issues": [31, 32, 33],
+      "lead_agent": "gemini-agent",
+      "focus": "Flagship assistant experience with NLP, memory integration, and proactive intelligence",
+      "timeline": "Weeks 3-5",
+      "critical_dependencies": ["Knowledge Graph Memory Architecture", "Privacy-First Voice Processing"]
+    },
+    "phase_3_integration_layer": {
+      "issues": [34, 35, 36],
+      "lead_agent": "codex-agent",
+      "focus": "Open source extraction, email integration, and developer workflow tools",
+      "timeline": "Weeks 6-9",
+      "supporting_agents": ["gemini-agent for email NLP"],
+      "critical_dependencies": ["Assistant Core", "Knowledge Graph"]
+    },
+    "phase_4_unified_interface": {
+      "issues": [37, 38],
+      "lead_agent": "codex-agent",
+      "focus": "Assistant-first UX and memory exploration interfaces",
+      "timeline": "Weeks 10-12",
+      "supporting_agents": ["gemini-agent for memory exploration features"],
+      "critical_dependencies": ["Assistant Core", "Memory Graph", "Integrations"]
+    },
+    "phase_5_production_polish": {
+      "issues": [39, 40, 41, 42],
+      "lead_agent": "codex-agent",
+      "focus": "Advanced intelligence, personalization, testing, and deployment",
+      "timeline": "Weeks 13-16",
+      "supporting_agents": {
+        "crush-agent-executor": "Advanced cross-context algorithms (Issue 39)",
+        "gemini-agent": "User personalization system (Issue 40)"
+      },
+      "critical_dependencies": ["All previous phases"]
+    }
+  },
+  "agent_responsibilities": {
+    "gemini-agent": {
+      "issues": [31, 32, 33, 35, 38, 40],
+      "total_count": 6,
+      "expertise_areas": [
+        "Natural language processing",
+        "AI assistant conversation systems",
+        "Voice processing and privacy",
+        "Email content analysis",
+        "Memory exploration interfaces",
+        "User personalization and adaptive learning"
+      ],
+      "cli_commands": [
+        "gemini process-nlp --project=spur --tasks=\"assistant-conversation,voice-processing,semantic-analysis\"",
+        "gemini train-models --project=spur --dataset=\"user-interactions\" --optimization=\"accuracy\"",
+        "gemini evaluate-ml --project=spur --models=\"speech-recognition,nlp-pipeline\" --metrics=\"latency,accuracy\""
+      ]
+    },
+    "codex-agent": {
+      "issues": [34, 36, 37, 41, 42],
+      "total_count": 5,
+      "expertise_areas": [
+        "Open source component extraction",
+        "Developer workflow integration",
+        "UI/UX architecture and interfaces",
+        "Testing frameworks and CI/CD",
+        "Production deployment infrastructure"
+      ],
+      "cli_commands": [
+        "codex generate-code --project=spur --tasks=\"testing-framework,ci-cd-pipeline\"",
+        "codex extract-components --project=spur --sources=\"leon-ai,inbox-zero,mailvelope\"",
+        "codex build-integration --project=spur --platforms=\"chrome,firefox,edge,safari\""
+      ]
+    },
+    "crush-agent-executor": {
+      "issues": [39],
+      "total_count": 1,
+      "expertise_areas": [
+        "Advanced cross-context algorithms",
+        "Knowledge graph optimization",
+        "Performance-critical computations",
+        "Complex pattern recognition"
+      ],
+      "cli_commands": [
+        "crush optimize-algorithms --project=spur --target=\"cross-context-patterns,knowledge-graph\"",
+        "crush benchmark-performance --project=spur --components=\"pattern-recognition,insight-generation\"",
+        "crush analyze-complexity --project=spur --algorithms=\"cross-context,fragment-reassembly\""
+      ]
+    }
+  },
+  "implementation_workflow": {
+    "parallel_development": true,
+    "phase_dependencies": {
+      "phase_2": ["Foundation issues 1-30"],
+      "phase_3": ["Phase 2 complete"],
+      "phase_4": ["Phase 3 complete"],
+      "phase_5": ["Phase 4 complete"]
+    },
+    "pr_strategy": {
+      "branch_naming": "feat/issue-{number}-{description}",
+      "pr_template": "spur-pr-template.md",
+      "review_requirements": {
+        "technical_review": true,
+        "security_review": true,
+        "performance_review": true,
+        "accessibility_review": true
+      },
+      "quality_gates": {
+        "test_coverage": "90%+",
+        "performance_benchmarks": "must meet targets",
+        "security_scan": "must pass",
+        "accessibility": "WCAG 2.2 compliant"
+      }
+    },
+    "agent_coordination": {
+      "standup_frequency": "daily",
+      "integration_points": [
+        "Memory graph access (all agents)",
+        "Event bus communication",
+        "TypeScript interface contracts",
+        "Performance optimization coordination"
+      ],
+      "conflict_resolution": "andy-agent as coordinator",
+      "integration_testing": "cross-agent integration suite"
+    }
+  },
+  "success_metrics": {
+    "phase_2": {
+      "assistant_response_time": "<100ms",
+      "nlp_accuracy": "92%+",
+      "memory_integration": "seamless",
+      "voice_recognition": "90%+ accuracy"
+    },
+    "phase_3": {
+      "email_processing": "real-time",
+      "github_integration": "automated workflows",
+      "vs_code_extension": "context-aware suggestions",
+      "open_source_extraction": "90%+ compatibility"
+    },
+    "phase_4": {
+      "user_satisfaction": "4.5+ rating",
+      "interface_responsiveness": "<100ms",
+      "memory_exploration": "intuitive",
+      "feature_discovery": "progressive disclosure"
+    },
+    "phase_5": {
+      "cross_context_insights": "actionable intelligence",
+      "personalization_effectiveness": "user adaptation",
+      "test_coverage": "90%+",
+      "deployment_reliability": "99.9% uptime"
+    }
+  },
+  "risk_mitigation": {
+    "agent_dependencies": "Cross-agent communication protocols established",
+    "performance_bottlenecks": "Continuous monitoring and optimization",
+    "integration_complexity": "Modular architecture with clear interfaces",
+    "timeline_risks": "Parallel development with phase gate reviews",
+    "quality_assurance": "Comprehensive testing and code reviews"
+  }
+}
