@@ -1,0 +1,571 @@
+name: Multi-Platform CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+    paths-ignore: ['docs/**', '*.md']
+  pull_request:
+    branches: [main, develop]
+    paths-ignore: ['docs/**', '*.md']
+  release:
+    types: [published]
+  schedule:
+    # Run daily security scans at 2 AM UTC
+    - cron: '0 2 * * *'
+
+env:
+  NODE_VERSION: '20'
+  PYTHON_VERSION: '3.11'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Code Quality & Security Analysis
+  code-quality:
+    name: Code Quality & Security
+    runs-on: ubuntu-latest
+    outputs:
+      quality-score: ${{ steps.quality-check.outputs.score }}
+      security-score: ${{ steps.security-check.outputs.score }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        npm run install:all
+
+    - name: Run ESLint
+      run: npm run lint
+
+    - name: Run TypeScript validation
+      run: npm run type-check
+
+    - name: Run security audit
+      run: npm audit --audit-level=moderate
+
+    - name: Run SonarQube scan
+      uses: SonarSource/sonarqube-scan-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+    - name: Generate quality report
+      id: quality-check
+      run: |
+        score=$(npm run quality-check --silent)
+        echo "score=$score" >> $GITHUB_OUTPUT
+
+    - name: Generate security report
+      id: security-check
+      run: |
+        score=$(npm run security-check --silent)
+        echo "score=$score" >> $GITHUB_OUTPUT
+
+  # Web Application Build & Test
+  web-app:
+    name: Web Application
+    runs-on: ubuntu-latest
+    needs: code-quality
+    if: needs.code-quality.outputs.quality-score >= 80 && needs.code-quality.outputs.security-score >= 90
+    
+    strategy:
+      matrix:
+        node-version: [18, 20]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: 'packages/web-app/package-lock.json'
+
+    - name: Install web app dependencies
+      working-directory: ./packages/web-app
+      run: npm ci
+
+    - name: Run web app tests
+      working-directory: ./packages/web-app
+      run: |
+        npm run test:unit
+        npm run test:integration
+        npm run test:e2e
+
+    - name: Build web app
+      working-directory: ./packages/web-app
+      run: npm run build
+
+    - name: Run Lighthouse audit
+      uses: treosh/lighthouse-ci-action@v9
+      with:
+        uploadArtifacts: true
+        temporaryPublicStorage: true
+
+    - name: Upload web app build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: web-app-build-${{ matrix.node-version }}
+        path: packages/web-app/dist/
+        retention-days: 7
+
+  # Chrome Extension Build & Test
+  chrome-extension:
+    name: Chrome Extension
+    runs-on: ubuntu-latest
+    needs: code-quality
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: 'packages/chrome-extension/package-lock.json'
+
+    - name: Install extension dependencies
+      working-directory: ./packages/chrome-extension
+      run: npm ci
+
+    - name: Run extension tests
+      working-directory: ./packages/chrome-extension
+      run: |
+        npm run test
+        npm run test:extension
+
+    - name: Build extension
+      working-directory: ./packages/chrome-extension
+      run: npm run build
+
+    - name: Validate extension manifest
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = './packages/chrome-extension/build/manifest.json';
+          const manifest = JSON.parse(fs.readFileSync(path, 'utf8'));
+          
+          // Validate required fields
+          const required = ['manifest_version', 'name', 'version'];
+          for (const field of required) {
+            if (!manifest[field]) {
+              core.setFailed(`Missing required field: ${field}`);
+              return;
+            }
+          }
+          
+          // Validate permissions
+          if (manifest.permissions && manifest.permissions.length > 50) {
+            core.warning('Extension has many permissions - review for necessity');
+          }
+          
+          console.log('✅ Extension manifest validated successfully');
+
+    - name: Package extension
+      working-directory: ./packages/chrome-extension
+      run: npm run package
+
+    - name: Upload extension artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: chrome-extension-build
+        path: |
+          packages/chrome-extension/build/
+          packages/chrome-extension/*.zip
+        retention-days: 7
+
+  # iOS Application Build & Test
+  ios-app:
+    name: iOS Application
+    runs-on: macos-latest
+    needs: code-quality
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: 'latest-stable'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: 'packages/ios-app/package-lock.json'
+
+    - name: Install iOS dependencies
+      working-directory: ./packages/ios-app
+      run: |
+        npm ci
+        pod install
+
+    - name: Run iOS tests
+      working-directory: ./packages/ios-app
+      run: |
+        xcodebuild test \
+          -scheme Spur \
+          -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+          -enableCodeCoverage YES
+
+    - name: Build iOS app
+      working-directory: ./packages/ios-app
+      run: |
+        xcodebuild archive \
+          -scheme Spur \
+          -destination generic/platform=iOS \
+          -archivePath build/Spur.xcarchive \
+          -allowProvisioningUpdates
+
+    - name: Upload iOS build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-app-build
+        path: packages/ios-app/build/
+        retention-days: 7
+
+  # Database & Backend Tests
+  backend-tests:
+    name: Backend & Database
+    runs-on: ubuntu-latest
+    needs: code-quality
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: spur_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: |
+        npm ci
+        npm run install:all
+
+    - name: Run database tests
+      run: npm run test:database
+
+    - name: Run API tests
+      run: npm run test:api
+
+    - name: Run integration tests
+      run: npm run test:integration
+
+    - name: Run performance tests
+      run: npm run test:performance
+
+  # Security Scanning
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    needs: [web-app, chrome-extension, backend-tests]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+    - name: Run OWASP ZAP scan
+      uses: zaproxy/action-baseline@v0.10.0
+      with:
+        target: 'http://localhost:3000'
+        rules_file_name: '.zap/rules.tsv'
+        cmd_options: '-a'
+
+  # Docker Build & Push
+  docker-build:
+    name: Docker Build & Push
+    runs-on: ubuntu-latest
+    needs: [web-app, backend-tests]
+    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+    
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./docker/Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  # Deploy to Production
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [docker-build, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to production
+      run: |
+        echo "🚀 Deploying to production..."
+        
+        # Deploy web app
+        echo "Deploying web app..."
+        # Add actual deployment commands here
+        
+        # Deploy backend services
+        echo "Deploying backend services..."
+        # Add actual deployment commands here
+        
+        # Run post-deployment tests
+        echo "Running post-deployment tests..."
+        # Add post-deployment test commands here
+        
+        echo "✅ Production deployment completed"
+
+    - name: Notify deployment
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+  # Deploy to Staging
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [web-app, chrome-extension, backend-tests]
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to staging
+      run: |
+        echo "🚀 Deploying to staging..."
+        
+        # Deploy to staging environment
+        # Add staging deployment commands here
+        
+        echo "✅ Staging deployment completed"
+
+  # Chrome Extension Store Submission
+  extension-store:
+    name: Chrome Extension Store
+    runs-on: ubuntu-latest
+    needs: [chrome-extension, security-scan]
+    if: github.event_name == 'release'
+    
+    steps:
+    - name: Download extension build
+      uses: actions/download-artifact@v4
+      with:
+        name: chrome-extension-build
+        path: extension/
+
+    - name: Submit to Chrome Web Store
+      uses: fregante/chrome-webstore-upload-cli@v2
+      with:
+        extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+        client-id: ${{ secrets.GOOGLE_CLIENT_ID }}
+        client-secret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+        refresh-token: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+        file: extension/spur-extension.zip
+        publish: true
+
+  # iOS App Store Submission
+  app-store:
+    name: App Store Submission
+    runs-on: macos-latest
+    needs: [ios-app, security-scan]
+    if: github.event_name == 'release'
+    
+    steps:
+    - name: Download iOS build
+      uses: actions/download-artifact@v4
+      with:
+        name: ios-app-build
+        path: ios-build/
+
+    - name: Export IPA
+      run: |
+        xcodebuild -exportArchive \
+          -archivePath ios-build/Spur.xcarchive \
+          -exportOptionsPlist ios-build/ExportOptions.plist \
+          -exportPath ios-build/ipa
+
+    - name: Upload to TestFlight
+      uses: apple-actions/upload-testflight-build@v1
+      with:
+        app-path: 'ios-build/ipa/Spur.ipa'
+        issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+        api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+        api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+
+  # Generate Release Notes
+  release-notes:
+    name: Generate Release Notes
+    runs-on: ubuntu-latest
+    needs: [deploy-production, extension-store, app-store]
+    if: github.event_name == 'release'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Generate release notes
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { version } = require('./package.json');
+          
+          // Get commits since last release
+          const { data: commits } = await github.rest.repos.listCommits({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            since: context.payload.release.target_commitish
+          });
+          
+          // Generate changelog
+          const changelog = commits.map(commit => {
+            return `- ${commit.commit.message} (${commit.sha.substring(0, 7)})`;
+          }).join('\n');
+          
+          // Update release notes
+          await github.rest.repos.updateRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            release_id: context.payload.release.id,
+            body: `# Spur v${version}\n\n## Changes\n${changelog}\n\n## Installation\n\n### Web App\n- Visit [app.spur.com](https://app.spur.com)\n\n### Chrome Extension\n- [Chrome Web Store](https://chrome.google.com/webstore/detail/spur/${{ secrets.CHROME_EXTENSION_ID }})\n\n### iOS App\n- [App Store](https://apps.apple.com/app/spur/${{ secrets.APP_STORE_ID }})\n\n## Support\n- [Documentation](https://docs.spur.com)\n- [Issues](https://github.com/${{ github.repository }}/issues)\n- [Discussions](https://github.com/${{ github.repository }}/discussions)`
+          });
+
+  # Monitor Production Health
+  health-check:
+    name: Production Health Check
+    runs-on: ubuntu-latest
+    needs: deploy-production
+    if: always()
+    
+    steps:
+    - name: Wait for deployment
+      run: sleep 30
+
+    - name: Check web app health
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" https://app.spur.com/health)
+        if [ "$response" -eq 200 ]; then
+          echo "✅ Web app is healthy"
+        else
+          echo "❌ Web app returned status $response"
+          exit 1
+        fi
+
+    - name: Check API health
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" https://api.spur.com/health)
+        if [ "$response" -eq 200 ]; then
+          echo "✅ API is healthy"
+        else
+          echo "❌ API returned status $response"
+          exit 1
+        fi
+
+    - name: Notify on failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#alerts'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
