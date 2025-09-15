@@ -1,0 +1,201 @@
+version: '3.8'
+
+services:
+  # Steel Browser API Service
+  steel-api:
+    build:
+      context: ./steel-browser
+      dockerfile: Dockerfile
+    container_name: steel-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - CHROME_EXECUTABLE_PATH=/usr/bin/google-chrome
+      - STEEL_API_KEY=${STEEL_API_KEY}
+    volumes:
+      - ./steel-browser:/app
+      - /app/node_modules
+      - steel-data:/app/data
+    depends_on:
+      - chrome
+    networks:
+      - spur-network
+    restart: unless-stopped
+
+  # Chrome for Steel Browser
+  chrome:
+    image: selenium/standalone-chrome:latest
+    container_name: steel-chrome
+    ports:
+      - "4444:4444"
+    environment:
+      - JAVA_OPTS=-Xmx512m
+      - SCREEN_WIDTH=1920
+      - SCREEN_HEIGHT=1080
+    volumes:
+      - /dev/shm:/dev/shm
+    networks:
+      - spur-network
+    restart: unless-stopped
+
+  # Spur Integration Service
+  spur-integration:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spur-integration
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - STEEL_API_URL=http://steel-api:3000
+      - STEEL_API_KEY=${STEEL_API_KEY}
+      - STEEL_CHROME_URL=http://chrome:4444
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - spur-data:/app/data
+    depends_on:
+      - steel-api
+      - chrome
+    networks:
+      - spur-network
+    restart: unless-stopped
+
+  # Database for Spur Memory (if needed)
+  memory-db:
+    image: postgres:15-alpine
+    container_name: spur-memory-db
+    environment:
+      - POSTGRES_DB=spur_memory
+      - POSTGRES_USER=spur_user
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-spur_password}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - spur-network
+    restart: unless-stopped
+
+  # Redis for caching (if needed)
+  redis:
+    image: redis:7-alpine
+    container_name: spur-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - spur-network
+    restart: unless-stopped
+
+  # Test Runner
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: spur-test-runner
+    environment:
+      - NODE_ENV=test
+      - STEEL_API_URL=http://steel-api:3000
+      - STEEL_API_KEY=${STEEL_API_KEY}
+      - STEEL_CHROME_URL=http://chrome:4444
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - test-results:/app/test-results
+    depends_on:
+      - steel-api
+      - chrome
+      - spur-integration
+    networks:
+      - spur-network
+    command: npm run test:integration
+    profiles:
+      - test
+
+  # Development Watcher
+  dev-watcher:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: spur-dev-watcher
+    environment:
+      - NODE_ENV=development
+      - STEEL_API_URL=http://steel-api:3000
+      - STEEL_API_KEY=${STEEL_API_KEY}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - steel-api
+      - chrome
+    networks:
+      - spur-network
+    command: npm run dev:integration
+    profiles:
+      - dev
+
+  # Documentation Server
+  docs:
+    image: nginx:alpine
+    container_name: spur-docs
+    ports:
+      - "8081:80"
+    volumes:
+      - ./docs:/usr/share/nginx/html:ro
+    networks:
+      - spur-network
+    restart: unless-stopped
+
+  # Monitoring (Prometheus + Grafana)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: spur-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - spur-network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: spur-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    depends_on:
+      - prometheus
+    networks:
+      - spur-network
+    restart: unless-stopped
+
+networks:
+  spur-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  steel-data:
+  postgres-data:
+  redis-data:
+  prometheus-data:
+  grafana-data:
+  test-results:

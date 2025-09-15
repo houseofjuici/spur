@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spur Browser - Intelligent Browsing Companion</title>
+    <meta name="description" content="The intelligent browsing companion with native AI integration">
+    <link rel="stylesheet" href="styles/browser.css">
+    <link rel="icon" href="../assets/icon.png" type="image/png">
+</head>
+<body>
+    <!-- Main Browser Container -->
+    <div id="browser-container" class="browser-container">
+        
+        <!-- Top Toolbar -->
+        <div id="toolbar" class="toolbar">
+            <div class="toolbar-section">
+                <!-- Navigation Controls -->
+                <div class="nav-controls">
+                    <button id="back-btn" class="toolbar-btn" title="Back" disabled>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <button id="forward-btn" class="toolbar-btn" title="Forward" disabled>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                    <button id="refresh-btn" class="toolbar-btn" title="Refresh">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 4v6h6M23 20v-6h-6M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+                        </svg>
+                    </button>
+                    <button id="home-btn" class="toolbar-btn" title="Home">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            <polyline points="9 22 9 12 15 12 15 22"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Address Bar -->
+                <div class="address-bar-container">
+                    <div class="address-bar-wrapper">
+                        <div id="security-indicator" class="security-indicator">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="address-bar" 
+                            class="address-bar" 
+                            placeholder="Search or enter website name..."
+                            autocomplete="off"
+                        >
+                        <button id="extension-menu" class="toolbar-btn" title="Spur Features">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v6m0 6v6m4.22-10.22l4.24 4.24m-4.24 4.24l4.24 4.24M20 12h-6m-6 0H2m10.22 4.22l-4.24 4.24m4.24-4.24l-4.24-4.24"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar-section">
+                <!-- Spur Controls -->
+                <div class="spur-controls">
+                    <button id="voice-btn" class="toolbar-btn voice-btn" title="Voice Assistant (⌘⇧V)">
+                        <div class="voice-indicator"></div>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                    </button>
+                    
+                    <button id="assistant-btn" class="toolbar-btn assistant-btn" title="Assistant (⌘⇧A)">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                        </svg>
+                    </button>
+                    
+                    <button id="memory-btn" class="toolbar-btn memory-btn" title="Memory Search (⌘⇧M)">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Window Controls -->
+                <div class="window-controls">
+                    <button id="minimize-btn" class="window-btn minimize" title="Minimize">
+                        <span class="line"></span>
+                    </button>
+                    <button id="maximize-btn" class="window-btn maximize" title="Maximize">
+                        <span class="square"></span>
+                    </button>
+                    <button id="close-btn" class="window-btn close" title="Close">
+                        <span class="x"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div id="main-content" class="main-content">
+            
+            <!-- Sidebar -->
+            <aside id="sidebar" class="sidebar">
+                <!-- Assistant Panel -->
+                <div id="assistant-panel" class="panel assistant-panel">
+                    <div class="panel-header">
+                        <h3>Spur Assistant</h3>
+                        <button id="close-assistant" class="panel-close">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="panel-content">
+                        <div id="assistant-conversation" class="conversation">
+                            <div class="message assistant">
+                                <div class="message-avatar">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                </div>
+                                <div class="message-content">
+                                    <p>Hello! I'm your Spur Assistant. How can I help you today?</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-area">
+                            <textarea 
+                                id="assistant-input" 
+                                class="assistant-input" 
+                                placeholder="Ask me anything..."
+                                rows="1"
+                            ></textarea>
+                            <button id="send-message" class="send-btn">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="22" y1="2" x2="11" y2="13"/>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Memory Panel -->
+                <div id="memory-panel" class="panel memory-panel" style="display: none;">
+                    <div class="panel-header">
+                        <h3>Memory Search</h3>
+                        <button id="close-memory" class="panel-close">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="panel-content">
+                        <div class="search-area">
+                            <input 
+                                type="text" 
+                                id="memory-search" 
+                                class="memory-search-input" 
+                                placeholder="Search your memories..."
+                            >
+                            <button id="search-memories" class="search-btn">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"/>
+                                    <path d="m21 21-4.35-4.35"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="memory-results" class="memory-results">
+                            <div class="empty-state">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                                </svg>
+                                <p>Search your browsing memories and thoughts</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Panel -->
+                <div id="voice-panel" class="panel voice-panel" style="display: none;">
+                    <div class="panel-header">
+                        <h3>Voice Assistant</h3>
+                        <button id="close-voice" class="panel-close">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="panel-content">
+                        <div class="voice-interface">
+                            <!-- Privacy Status -->
+                            <div id="privacy-status" class="privacy-status">
+                                <div class="privacy-indicator excellent"></div>
+                                <span>Privacy: Excellent (100%)</span>
+                            </div>
+                            
+                            <!-- Audio Visualizer -->
+                            <div id="voice-visualizer" class="voice-visualizer">
+                                <div class="waveform"></div>
+                            </div>
+                            
+                            <!-- Visualization Info -->
+                            <div id="visualization-info" class="visualization-info">
+                                <div class="viz-info">
+                                    <span class="audio-level">Level: 0%</span>
+                                    <span class="speech-activity">Speech: No</span>
+                                    <span class="noise-level">Noise: 0%</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Voice Status -->
+                            <div id="voice-status" class="voice-status">
+                                <p>Ready to listen... <span class="privacy-badge">🔒 Privacy Mode</span></p>
+                            </div>
+                            
+                            <!-- Voice Controls -->
+                            <div class="voice-controls">
+                                <button id="start-voice" class="voice-control-btn primary">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                                    </svg>
+                                    Start Recording
+                                </button>
+                                <button id="stop-voice" class="voice-control-btn danger" style="display: none;">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="6" y="4" width="12" height="16"/>
+                                    </svg>
+                                    Stop Recording
+                                </button>
+                            </div>
+                            
+                            <!-- Privacy Controls -->
+                            <div class="privacy-controls">
+                                <h4>Privacy Settings</h4>
+                                <div class="privacy-control-item">
+                                    <label for="zero-retention">
+                                        Zero Audio Retention
+                                        <small>Never store raw audio</small>
+                                    </label>
+                                    <input type="checkbox" id="zero-retention" checked>
+                                </div>
+                                <div class="privacy-control-item">
+                                    <label for="local-processing">
+                                        Local Processing Only
+                                        <small>Process audio on device</small>
+                                    </label>
+                                    <input type="checkbox" id="local-processing" checked>
+                                </div>
+                                <div class="privacy-control-item">
+                                    <label for="privacy-filters">
+                                        Privacy Filters
+                                        <small>Filter sensitive content</small>
+                                    </label>
+                                    <input type="checkbox" id="privacy-filters" checked>
+                                </div>
+                                <div class="privacy-control-item">
+                                    <label for="noise-cancellation">
+                                        Noise Cancellation
+                                        <small>Reduce background noise</small>
+                                    </label>
+                                    <input type="checkbox" id="noise-cancellation" checked>
+                                </div>
+                                <div class="privacy-control-item">
+                                    <label for="audio-quality">
+                                        Audio Quality
+                                        <small>Balance quality and privacy</small>
+                                    </label>
+                                    <select id="audio-quality" class="audio-quality-select">
+                                        <option value="low">Low (Best Privacy)</option>
+                                        <option value="medium" selected>Medium (Balanced)</option>
+                                        <option value="high">High (Lower Privacy)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Privacy Report -->
+                            <div class="privacy-report">
+                                <h4>Privacy Report</h4>
+                                <div class="privacy-metrics">
+                                    <div class="privacy-metric">
+                                        <span class="label">Audio Processed</span>
+                                        <span class="value" id="audio-processed">0</span>
+                                    </div>
+                                    <div class="privacy-metric">
+                                        <span class="label">Audio Retained</span>
+                                        <span class="value" id="audio-retained">0</span>
+                                    </div>
+                                    <div class="privacy-metric">
+                                        <span class="label">Privacy Score</span>
+                                        <span class="value" id="privacy-score">100%</span>
+                                    </div>
+                                    <div class="privacy-metric">
+                                        <span class="label">Safety Status</span>
+                                        <span class="value" id="safety-status">Safe</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Browser Content Area -->
+            <main id="browser-content" class="browser-content">
+                <webview 
+                    id="main-webview" 
+                    class="webview" 
+                    src="https://www.google.com"
+                    allowpopups="true"
+                    webpreferences="contextIsolation=yes,enableRemoteModule=no,nodeIntegration=no"
+                ></webview>
+            </main>
+
+            <!-- Tab Bar -->
+            <div id="tab-bar" class="tab-bar">
+                <div class="tab-container">
+                    <div class="tab active" data-tab-id="1">
+                        <div class="tab-favicon">
+                            <img src="../assets/google-favicon.png" alt="Google">
+                        </div>
+                        <div class="tab-title">New Tab</div>
+                        <button class="tab-close">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <button id="new-tab-btn" class="new-tab-btn" title="New Tab">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div id="status-bar" class="status-bar">
+            <div class="status-left">
+                <span id="status-url" class="status-url">https://www.google.com</span>
+            </div>
+            <div class="status-right">
+                <span id="status-memory" class="status-memory">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Memory: Active
+                </span>
+                <span id="status-voice" class="status-voice">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                    </svg>
+                    Voice: Ready
+                </span>
+                <span id="status-security" class="status-security">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    Secure
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/browser.js"></script>
+    <script src="js/spur-integration.js"></script>
+    <script src="js/voice-interface.js"></script>
+    <script src="js/memory-interface.js"></script>
+    <script src="js/assistant-interface.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+{
+  "manifest_version": 3,
+  "name": "Spur - Personal Productivity Companion",
+  "version": "1.0.0",
+  "description": "AI-powered personal productivity companion with real-time voice interaction and email management",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "contextMenus",
+    "notifications",
+    "alarms",
+    "commands",
+    "offscreen",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://accounts.google.com/*",
+    "https://www.googleapis.com/*",
+    "https://mail.google.com/*",
+    "https://*.googleusercontent.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "css": ["content-styles.css"],
+      "js": ["content-script.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Spur",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "24": "icons/icon-24.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png"
+    }
+  },
+  "options_page": "options.html",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "24": "icons/icon-24.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "64": "icons/icon-64.png",
+    "128": "icons/icon-128.png",
+    "256": "icons/icon-256.png",
+    "512": "icons/icon-512.png"
+  },
+  "commands": {
+    "toggle-capture": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Toggle voice capture"
+    },
+    "quick-capture": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+C",
+        "mac": "Command+Shift+C"
+      },
+      "description": "Quick capture thought"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*"],
+      "matches": ["https://mail.google.com/*"]
+    }
+  ]
+}
