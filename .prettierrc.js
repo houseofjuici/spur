@@ -1,0 +1,17 @@
+module.exports = {
+  semi: false,
+  trailingComma: 'es5',
+  singleQuote: true,
+  printWidth: 100,
+  tabWidth: 2,
+  useTabs: false,
+  arrowParens: 'avoid',
+  endOfLine: 'lf',
+  quoteProps: 'as-needed',
+  jsxSingleQuote: false,
+  bracketSpacing: true,
+  bracketSameLine: false,
+  proseWrap: 'preserve',
+  htmlWhitespaceSensitivity: 'css',
+  embeddedLanguageFormatting: 'auto',
+}

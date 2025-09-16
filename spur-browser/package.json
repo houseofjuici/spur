@@ -1,0 +1,153 @@
+{
+  "name": "spur-browser",
+  "version": "1.0.0",
+  "description": "Spur Browser - The intelligent browsing companion with native integration",
+  "main": "src/main.js",
+  "homepage": "https://spurbrowser.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/houseofjuici/spur.git"
+  },
+  "author": "Spur Team",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux",
+    "dev": "electron . --dev",
+    "test": "jest",
+    "test:e2e": "playwright test",
+    "lint": "eslint src/ --ext .ts,.js",
+    "type-check": "tsc --noEmit",
+    "package": "electron-builder --publish=never",
+    "dist": "electron-builder --publish=always"
+  },
+  "dependencies": {
+    "electron": "^25.0.0",
+    "electron-updater": "^6.1.1",
+    "electron-store": "^8.1.0",
+    "electron-log": "^4.4.8",
+    "@electron/remote": "^2.0.9",
+    "node-machine-id": "^1.1.12",
+    "systeminformation": "^5.21.7",
+    "os": "^0.1.2",
+    "path": "^0.12.7",
+    "fs-extra": "^11.1.1",
+    "crypto": "^1.0.1",
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.0",
+    "@types/jest": "^29.5.4",
+    "@types/ws": "^8.5.5",
+    "@electron/notarize": "^2.1.0",
+    "electron-builder": "^24.6.3",
+    "jest": "^29.6.2",
+    "playwright": "^1.37.1",
+    "eslint": "^8.47.0",
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "@typescript-eslint/parser": "^6.4.0",
+    "typescript": "^5.1.6",
+    "ts-node": "^10.9.1"
+  },
+  "build": {
+    "appId": "com.spur.browser",
+    "productName": "Spur Browser",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mac.plist",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "asarUnpack": [
+        "**/node_modules/spur-voice/**/*",
+        "**/node_modules/@spur/**/*"
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "asarUnpack": [
+        "**/node_modules/spur-voice/**/*",
+        "**/node_modules/@spur/**/*"
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64"]
+        },
+        {
+          "target": "rpm",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "houseofjuici",
+      "repo": "spur"
+    }
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.ts",
+      "**/tests/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,js}",
+      "!src/**/*.d.ts"
+    ]
+  },
+  "keywords": [
+    "browser",
+    "chromium",
+    "productivity",
+    "ai",
+    "voice",
+    "memory",
+    "assistant",
+    "privacy",
+    "electron"
+  ]
+}

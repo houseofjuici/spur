@@ -1,0 +1,17 @@
+{
+  "name": "spur-capture-engine-test",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test": "vitest",
+    "test:coverage": "vitest --coverage"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.4",
+    "@vitest/coverage-v8": "^1.0.4",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "uuid": "^9.0.1"
+  }
+}
