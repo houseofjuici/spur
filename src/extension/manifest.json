@@ -1,0 +1,93 @@
+{
+  "manifest_version": 3,
+  "name": "Spur - Personal Workflow Companion",
+  "version": "0.1.0",
+  "description": "Always-on productivity companion that connects your tools and workflows seamlessly",
+  "author": "Spur Team",
+  "homepage_url": "https://spur.com",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "scripting",
+    "alarms",
+    "contextMenus",
+    "notifications",
+    "offscreen"
+  ],
+  "optional_permissions": [
+    "bookmarks",
+    "history",
+    "cookies",
+    "downloads",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_end",
+      "all_frames": false
+    }
+  ],
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_title": "Open Spur",
+    "default_icon": {
+      "16": "assets/icon-16.png",
+      "24": "assets/icon-24.png",
+      "32": "assets/icon-32.png",
+      "48": "assets/icon-48.png",
+      "64": "assets/icon-64.png",
+      "128": "assets/icon-128.png"
+    }
+  },
+  "options_page": "options/index.html",
+  "options_ui": {
+    "page": "options/index.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "assets/icon-16.png",
+    "24": "assets/icon-24.png",
+    "32": "assets/icon-32.png",
+    "48": "assets/icon-48.png",
+    "64": "assets/icon-64.png",
+    "128": "assets/icon-128.png",
+    "256": "assets/icon-256.png",
+    "512": "assets/icon-512.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/*", "fonts/*"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "commands": {
+    "open-dashboard": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Cmd+Shift+S"
+      },
+      "description": "Open Spur Dashboard"
+    },
+    "quick-capture": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+C",
+        "mac": "Cmd+Shift+C"
+      },
+      "description": "Quick Capture Current Context"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://*.spur.com https://*.googleapis.com https://*.githubusercontent.com"
+  }
+}

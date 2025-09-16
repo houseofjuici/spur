@@ -1,0 +1,100 @@
+// CSS variables for design system
+:root {
+  // Ethereal Blue Dream palette
+  --color-primary-50: #F0F7FF;
+  --color-primary-100: #E0F0FF;
+  --color-primary-200: #C7E6FF;
+  --color-primary-300: #A3D5FF;
+  --color-primary-400: #7FB3D3;
+  --color-primary-500: #5B91B3;
+  --color-primary-600: #417293;
+  --color-primary-700: #2D5373;
+  --color-primary-800: #1F3448;
+  --color-primary-900: #111B1E;
+  
+  // Accent colors
+  --color-accent-50: #FFF5F0;
+  --color-accent-100: #FFE8E0;
+  --color-accent-200: #FFD5C7;
+  --color-accent-300: #FFB8A3;
+  --color-accent-400: #FF9073;
+  --color-accent-500: #FF6843;
+  --color-accent-600: #E55A3B;
+  --color-accent-700: #C74C33;
+  --color-accent-800: #A53D2B;
+  --color-accent-900: #832F23;
+  
+  // Neutral colors
+  --color-neutral-50: #F8F9FA;
+  --color-neutral-100: #E9ECEF;
+  --color-neutral-200: #DEE2E6;
+  --color-neutral-300: #CED4DA;
+  --color-neutral-400: #ADB5BD;
+  --color-neutral-500: #6C757D;
+  --color-neutral-600: #495057;
+  --color-neutral-700: #343A40;
+  --color-neutral-800: #212529;
+  --color-neutral-900: #0F0F0F;
+  
+  // Semantic colors
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+  
+  // Typography
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  // Spacing
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+  
+  // Border radius
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  
+  // Shadows
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  
+  // Transitions
+  --transition-fast: 150ms;
+  --transition-normal: 200ms;
+  --transition-slow: 300ms;
+  
+  // Z-index
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+[data-theme="dark"] {
+  // Dark mode overrides
+  --color-primary-400: #8FB9E1;
+  --color-primary-500: #6FA1D3;
+  --color-primary-600: #4F89C5;
+  
+  --color-accent-400: #FFA089;
+  --color-accent-500: #FF8063;
+  --color-accent-600: #FF6043;
+  
+  --color-neutral-100: #374151;
+  --color-neutral-200: #4B5563;
+  --color-neutral-300: #6B7280;
+  --color-neutral-400: #9CA3AF;
+  --color-neutral-500: #D1D5DB;
+}
