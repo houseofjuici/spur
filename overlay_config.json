@@ -1,0 +1,85 @@
+{
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30.0,
+    "base_video": "your_base_video.mp4",
+    "output_video": "final_composited_video.mp4"
+  },
+  "center_region": {
+    "width_percent": 0.4,
+    "height_percent": 0.6,
+    "feather_pixels": 50,
+    "description": "Protected zone - remains perfectly transparent"
+  },
+  "effects": {
+    "blur_strength": 25,
+    "noise_intensity": 0.3,
+    "rgb_shift_amount": 3,
+    "jitter_amount": 2,
+    "peripheral_opacity": 0.6
+  },
+  "timeline": [
+    {
+      "start": 0.0,
+      "end": 3.0,
+      "state": "focused",
+      "description": "Opening - iris animation + song section",
+      "effects": {
+        "blur": true,
+        "noise": true,
+        "artifacts": true
+      }
+    },
+    {
+      "start": 3.0,
+      "end": 8.0,
+      "state": "unfocused",
+      "description": "Film clip - full screen visible",
+      "effects": {
+        "blur": false,
+        "noise": false,
+        "artifacts": false
+      }
+    },
+    {
+      "start": 8.0,
+      "end": 12.0,
+      "state": "focused",
+      "description": "Song section - center focus active",
+      "effects": {
+        "blur": true,
+        "noise": true,
+        "artifacts": true
+      }
+    },
+    {
+      "start": 12.0,
+      "end": 18.0,
+      "state": "unfocused",
+      "description": "Another film clip",
+      "effects": {
+        "blur": false,
+        "noise": false,
+        "artifacts": false
+      }
+    },
+    {
+      "start": 18.0,
+      "end": 22.0,
+      "state": "focused",
+      "description": "Final song - closing iris animation",
+      "effects": {
+        "blur": true,
+        "noise": true,
+        "artifacts": true
+      }
+    }
+  ],
+  "notes": {
+    "timeline_editing": "Edit the 'timeline' array above to match your video structure",
+    "state_focused": "Effects active - center artwork isolated",
+    "state_unfocused": "Effects off - full video visible",
+    "iris_animation": "Automatically applied to first and last segments (0.5s duration)"
+  }
+}
